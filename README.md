@@ -7,3 +7,5 @@ Issues / to do:
 - Throw exceptions (ex: problem is not set, size of problem vectors do not match, etc)
 
 - Dual?
+
+- It only solves maximization problems with restrictions of type "less than"
