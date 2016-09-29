@@ -41,32 +41,32 @@ double Indiv::fitness(double weight) {
 		switch (rests[i]) {
 			case eql:
 				if (value!=b[i]) {
-					fit = fit-weight*absdouble(rests[i]-value);
+					fit -= weight*absdouble((rests[i]-value));
 				}
 				break;
 			case les:
 				if (value>=b[i]) {
-					fit = fit-weight*absdouble(rests[i]-value);
+					fit -= weight*absdouble((rests[i]-value));
 				}
 				break;
 			case leq:
 				if (value>b[i]) {
-					fit = fit-weight*absdouble(rests[i]-value);
+					fit -= weight*absdouble((rests[i]-value));
 				}
 				break;
 			case gre:
 				if (value<=b[i]) {
-					fit = fit-weight*absdouble(rests[i]-value);
+					fit -= weight*absdouble((rests[i]-value));
 				}
 				break;
 			case geq:
 				if (value<b[i]) {
-					fit = fit-weight*absdouble(rests[i]-value);
+					fit -= weight*absdouble((rests[i]-value));
 				}
 				break;
 			case dif:
 				if (value==b[i]) {
-					fit = fit-weight*absdouble(rests[i]-value);
+					fit -= weight*absdouble((rests[i]-value));
 				}
 				break;
 		}

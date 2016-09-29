@@ -8,7 +8,7 @@
 
 enum restrictions {eql = 0, les, leq, gre, geq, dif };
 
-#define absdouble(macrovalue) (macrovalue<0 ? -macrovalue : macrovalue)
+#define absdouble(macrovalue) (macrovalue>=0 ? macrovalue : -macrovalue)
 
 class Indiv {
 public:
