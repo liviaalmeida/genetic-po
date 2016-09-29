@@ -1,6 +1,5 @@
 #include "indiv.hpp"
 
-
 Indiv::Indiv() {
 
 }
@@ -29,7 +28,7 @@ std::vector<int> Indiv::getInd() {
 	return indcopy;
 }
 
-double Indiv::fitness(bool max) {
+double Indiv::fitness(double weight) {
 	double fit = 0;
 	for (int i=0; i<ind.size(); ++i) {
 		fit += ind[i]*fx[i];
@@ -42,32 +41,32 @@ double Indiv::fitness(bool max) {
 		switch (rests[i]) {
 			case eql:
 				if (value!=b[i]) {
-					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+					fit = fit-weight*absdouble(rests[i]-value);
 				}
 				break;
 			case les:
 				if (value>=b[i]) {
-					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+					fit = fit-weight*absdouble(rests[i]-value);
 				}
 				break;
 			case leq:
 				if (value>b[i]) {
-					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+					fit = fit-weight*absdouble(rests[i]-value);
 				}
 				break;
 			case gre:
 				if (value<=b[i]) {
-					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+					fit = fit-weight*absdouble(rests[i]-value);
 				}
 				break;
 			case geq:
 				if (value<b[i]) {
-					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+					fit = fit-weight*absdouble(rests[i]-value);
 				}
 				break;
 			case dif:
 				if (value==b[i]) {
-					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+					fit = fit-weight*absdouble(rests[i]-value);
 				}
 				break;
 		}
@@ -75,8 +74,15 @@ double Indiv::fitness(bool max) {
 	return fit;
 }
 
-void Indiv::pushObjective(bool max, std::vector<int> fxa) {
-	fx = fxa;
+void Indiv::pushObjective(bool max, std::vector<double> fxa) {
+	trueObj = fxa;
+	if (max) {
+		fx = fxa;
+	} else {
+		for (int i=0; i<fxa.size(); ++i) {
+			fx.push_back(-fxa[i]);
+		}
+	}
 	isMax = max;
 }
 
@@ -97,7 +103,7 @@ int Indiv::getRestriction(std::string keyword) {
 	return -1;
 }
 
-void Indiv::pushRestriction(std::vector<int> Aline, int bvalue, int rest) {
+void Indiv::pushRestriction(std::vector<double> Aline, double bvalue, int rest) {
 	A.push_back(Aline);
 	b.push_back(bvalue);
 	rests.push_back(rest);
@@ -109,15 +115,15 @@ bool Indiv::isMaxP() {
 
 void Indiv::printProblem() {
 	std::cout<<(isMax ? "Maximize " : "Minimize ");
-	if (fx[0]<0) {
+	if (trueObj[0]<0) {
 		std::cout<<"-";
 	}
-	std::cout<<fx[0]<<"x"<<1;
-	for (int i=1; i<fx.size(); ++i) {
-		if (fx[i]>0) {
+	std::cout<<trueObj[0]<<"x"<<1;
+	for (int i=1; i<trueObj.size(); ++i) {
+		if (trueObj[i]>0) {
 			std::cout<<" +";
 		}
-		std::cout<<" "<<fx[i]<<"x"<<i+1;
+		std::cout<<" "<<trueObj[i]<<"x"<<i+1;
 	}
 	std::cout<<"\nSubject to:\n";
 	for (int i=0; i<A.size(); ++i) {
@@ -162,10 +168,9 @@ std::ostream& operator<<(std::ostream &output, const Indiv &I) {
 	return output;
 }
 
-
-
-std::vector<int> Indiv::fx(0);
-std::vector< std::vector<int> > Indiv::A(0);
-std::vector<int> Indiv::b(0);
+std::vector<double> Indiv::fx(0);
+std::vector<double> Indiv::trueObj(0);
+std::vector< std::vector<double> > Indiv::A(0);
+std::vector<double> Indiv::b(0);
 std::vector<int> Indiv::rests(0);
 bool Indiv::isMax = true;

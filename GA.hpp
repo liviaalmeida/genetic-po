@@ -17,7 +17,7 @@ public:
 	int popSize, generations, tSize, seed;
 	int minRand, maxRand;
 	bool diversity;
-	double crossP, mutP;
+	double crossP, mutP, restWeight;
 };
 
 class GA {

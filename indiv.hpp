@@ -19,11 +19,11 @@ public:
 	int size();
 	int& operator[](int index);
 	std::vector<int> getInd();
-	double fitness(bool max);
+	double fitness(double weight);
 
-	static void pushObjective(bool max, std::vector<int> fxa);
+	static void pushObjective(bool max, std::vector<double> fxa);
 	static int getRestriction(std::string keyword);
-	static void pushRestriction(std::vector<int> Aline, int bvalue, int rest);
+	static void pushRestriction(std::vector<double> Aline, double bvalue, int rest);
 	static bool isMaxP();
 	static void printProblem();
 
@@ -31,9 +31,10 @@ public:
 
 private:
 	std::vector<int> ind;
-	static std::vector<int> fx;
-	static std::vector< std::vector<int> > A;
-	static std::vector<int> b;
+	static std::vector<double> fx;
+	static std::vector<double> trueObj;
+	static std::vector< std::vector<double> > A;
+	static std::vector<double> b;
 	static std::vector<int> rests;
 	static bool isMax;
 };
