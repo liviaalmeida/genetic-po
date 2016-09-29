@@ -29,7 +29,7 @@ std::vector<int> Indiv::getInd() {
 	return indcopy;
 }
 
-double Indiv::fitness() {
+double Indiv::fitness(bool max) {
 	double fit = 0;
 	for (int i=0; i<ind.size(); ++i) {
 		fit += ind[i]*fx[i];
@@ -39,27 +39,76 @@ double Indiv::fitness() {
 		for (int j=0; j<ind.size(); ++j) {
 			value += ind[j]*A[i][j];
 		}
-		if (value>b[i]) {
-			fit = 0;
-			break;
+		switch (rests[i]) {
+			case eql:
+				if (value!=b[i]) {
+					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+				}
+				break;
+			case les:
+				if (value>=b[i]) {
+					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+				}
+				break;
+			case leq:
+				if (value>b[i]) {
+					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+				}
+				break;
+			case gre:
+				if (value<=b[i]) {
+					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+				}
+				break;
+			case geq:
+				if (value<b[i]) {
+					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+				}
+				break;
+			case dif:
+				if (value==b[i]) {
+					fit = max ? fit-absdouble(value) : fit+absdouble(value);
+				}
+				break;
 		}
 	}
 	return fit;
 }
 
-
-void Indiv::pushObjective(std::vector<int> fxa) {
+void Indiv::pushObjective(bool max, std::vector<int> fxa) {
 	fx = fxa;
+	isMax = max;
 }
 
+int Indiv::getRestriction(std::string keyword) {
+	if (keyword=="eql") {
+		return 0;
+	} else if (keyword=="les") {
+		return 1;
+	} else if (keyword=="leq") {
+		return 2;
+	} else if (keyword=="gre") {
+		return 3;
+	} else if (keyword=="geq") {
+		return 4;
+	} else if (keyword=="dif") {
+		return 5;
+	}
+	return -1;
+}
 
-void Indiv::pushRestriction(std::vector<int> Aline, int bvalue) {
+void Indiv::pushRestriction(std::vector<int> Aline, int bvalue, int rest) {
 	A.push_back(Aline);
 	b.push_back(bvalue);
+	rests.push_back(rest);
+}
+
+bool Indiv::isMaxP() {
+	return isMax;
 }
 
 void Indiv::printProblem() {
-	std::cout<<"Maximize ";
+	std::cout<<(isMax ? "Maximize " : "Minimize ");
 	if (fx[0]<0) {
 		std::cout<<"-";
 	}
@@ -82,7 +131,26 @@ void Indiv::printProblem() {
 			}
 			std::cout<<" "<<A[i][j]<<"x"<<j+1;
 		}
-		std::cout<<" <= "<<b[i]<<"\n";
+		switch (rests[i]) {
+			case eql:
+				std::cout<<" = ";
+				break;
+			case les:
+				std::cout<<" < ";
+				break;
+			case leq:
+				std::cout<<" <= ";
+				break;
+			case gre:
+				std::cout<<" > ";
+				break;
+			case geq:
+				std::cout<<" <= ";
+				break;
+			default:
+				std::cout<<" unknown_restriction ";
+		}
+		std::cout<<b[i]<<"\n";
 	}
 }
 
@@ -94,6 +162,10 @@ std::ostream& operator<<(std::ostream &output, const Indiv &I) {
 	return output;
 }
 
+
+
 std::vector<int> Indiv::fx(0);
 std::vector< std::vector<int> > Indiv::A(0);
 std::vector<int> Indiv::b(0);
+std::vector<int> Indiv::rests(0);
+bool Indiv::isMax = true;

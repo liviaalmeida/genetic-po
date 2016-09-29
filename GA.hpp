@@ -6,7 +6,8 @@
 #include <random>
 #include <utility>
 #include <set>
-#include <string>
+
+#define objbool(macrokey) (macrokey=="max" ? true : false)
 
 class GAConf {
 public:
@@ -40,7 +41,7 @@ private:
 	int tournament();
 	std::pair<Indiv,Indiv> crossover();
 	void mutation(Indiv &parent);
-	void evolve(int maxfit);
+	void evolve(int bestfit);
 	int printStats();
 
 };

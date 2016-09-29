@@ -34,18 +34,19 @@ GA::GA(char const *params, char const *ini) : conf(ini) {
 	population.reserve(conf.popSize);
 	fitness.reserve(conf.popSize);
 	std::ifstream problem(params);
-	std::string field, equal;
+	std::string field, equal, keyword;
 	while (problem>>field>>equal) {
 		if (field=="Vars") {
 			problem>>vars;
 		} else if (field=="Objective") {
+			problem>>keyword;
 			std::vector<int> obj(vars);
 			for (int i=0; i<vars; ++i) {
 				int p;
 				problem>>p;
 				obj[i] = p;
 			}
-			Indiv::pushObjective(obj);
+			Indiv::pushObjective(objbool(keyword),obj);
 		} else if (field=="Rest") {
 			std::vector<int> rt(vars);
 			int bound;
@@ -54,8 +55,10 @@ GA::GA(char const *params, char const *ini) : conf(ini) {
 				problem>>r;
 				rt[i] = r;
 			}
+			problem>>keyword;
+			int rest = Indiv::getRestriction(keyword);
 			problem>>bound;
-			Indiv::pushRestriction(rt,bound);
+			Indiv::pushRestriction(rt,bound,rest);
 		}
 	}
 }
@@ -67,14 +70,14 @@ GA::~GA() {
 Indiv GA::run() {
 	initialPopulation();
 	std::cout<<"Generation 0 ";
-	int maxfit = printStats();
+	int bestfit = printStats();
 	for (int gen=0; gen<conf.generations; gen++) {
-		evolve(maxfit);
+		evolve(bestfit);
 		std::cout<<"Generation "<<gen+1<<" ";
-		maxfit = printStats();
+		bestfit = printStats();
 	}
 	Indiv::printProblem();
-	return population[maxfit];
+	return population[bestfit];
 }
 
 void GA::initialPopulation() {
@@ -83,12 +86,12 @@ void GA::initialPopulation() {
 	}
 	for (int i=0; i<conf.popSize; ++i) {
 		std::vector<int> ind(vars);
-		std::uniform_int_distribution<int> chooseGen(conf.minRand,conf.maxRand);
+		std::uniform_real_distribution<double> chooseGen(conf.minRand,conf.maxRand);
 		for (int i=0; i<vars; ++i) {
 			ind[i] = chooseGen(generator);
 		}
 		Indiv newInd(ind);
-		double fit = newInd.fitness();
+		double fit = newInd.fitness(Indiv::isMaxP());
 		population.push_back(newInd);
 		fitness.push_back(fit);
 	}
@@ -103,11 +106,11 @@ int GA::tournament() {
 	}
 	std::set<int>::iterator it = sample.begin();
 	int index = *it;
-	double maxfit = fitness[*it];
+	double bestfit = fitness[*it];
 	++it;
 	while (it!=sample.end()) {
-		if (fitness[*it] > maxfit) {
-			maxfit = fitness[*it];
+		if (Indiv::isMaxP() ? fitness[*it]>bestfit : fitness[*it]<bestfit) {
+			bestfit = fitness[*it];
 			index = *it;
 		}
 		++it;
@@ -155,23 +158,23 @@ void GA::mutation(Indiv &parent) {
 	}
 }
 
-void GA::evolve(int maxfit) {
+void GA::evolve(int bestfit) {
 	std::vector<Indiv> newpop;
 	std::vector<double> newfit;
 	newpop.reserve(population.size());
 	newfit.reserve(fitness.size());
-	newpop.push_back(population[maxfit]);
-	newfit.push_back(fitness[maxfit]);
+	newpop.push_back(population[bestfit]);
+	newfit.push_back(fitness[bestfit]);
 	std::uniform_real_distribution<double> genOp(0,1);
 	while (newpop.size()!=conf.popSize) {
 		double op = genOp(generator);
 		if (op<=conf.crossP) {
 			std::pair<Indiv, Indiv> children = crossover();
-			double fit1 = children.first.fitness();
+			double fit1 = children.first.fitness(Indiv::isMaxP());
 			newpop.push_back(children.first);
 			newfit.push_back(fit1);
 			if (newpop.size()!=conf.popSize) {
-				double fit2 = children.second.fitness();
+				double fit2 = children.second.fitness(Indiv::isMaxP());
 				newpop.push_back(children.second);
 				newfit.push_back(fit2);
 			}
@@ -179,7 +182,7 @@ void GA::evolve(int maxfit) {
 			int rep = tournament();
 			Indiv R(population[rep].getInd());
 			mutation(R);
-			double fit = R.fitness();
+			double fit = R.fitness(Indiv::isMaxP());
 			newpop.push_back(R);
 			newfit.push_back(fit);
 		}
@@ -204,5 +207,5 @@ int GA::printStats() {
 	}
 	avg /= fitness.size();
 	std::cout<<"MIN FIT: "<<min<<" MAX FIT: "<<max<<" AVG FIT: "<<avg<<'\n';
-	return maxindex;
+	return (Indiv::isMaxP() ? maxindex : minindex);
 }
