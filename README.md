@@ -8,4 +8,4 @@ Issues / to do:
 
 - Dual?
 
-- It only solves maximization problems ~~with restrictions of type "less than"~~
+- ~~It only solves maximization problems with restrictions of type "less than"~~
