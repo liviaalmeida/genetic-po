@@ -1,34 +1,40 @@
 #include "indiv.hpp"
 
-Indiv::Indiv() {
+template <typename Real>
+Indiv<Real>::Indiv() {
 
 }
 
-Indiv::Indiv(std::vector<int> indvalues) {
+template <typename Real>
+Indiv<Real>::Indiv(std::vector<Real> indvalues) {
 	ind.reserve(indvalues.size());
 	ind = indvalues;
 }
 
-Indiv::~Indiv() {
+template <typename Real>
+Indiv<Real>::~Indiv() {
 
 }
 
-
-int Indiv::size() {
+template <typename Real>
+int Indiv<Real>::size() {
 	return ind.size();
 }
 
-int& Indiv::operator[](int index) {
+template <typename Real>
+Real& Indiv<Real>::operator[](int index) {
 	return ind[index];
 }
 
-std::vector<int> Indiv::getInd() {
-	std::vector<int> indcopy;
+template <typename Real>
+std::vector<Real> Indiv<Real>::getInd() {
+	std::vector<Real> indcopy;
 	indcopy = ind;
 	return indcopy;
 }
 
-double Indiv::fitness(double weight) {
+template <typename Real>
+double Indiv<Real>::fitness(double weight) {
 	double fit = 0;
 	for (int i=0; i<ind.size(); ++i) {
 		fit += ind[i]*fx[i];
@@ -74,7 +80,8 @@ double Indiv::fitness(double weight) {
 	return fit;
 }
 
-void Indiv::pushObjective(bool max, std::vector<double> fxa) {
+template <typename Real>
+void Indiv<Real>::pushObjective(bool max, std::vector<double> fxa) {
 	trueObj = fxa;
 	if (max) {
 		fx = fxa;
@@ -86,7 +93,8 @@ void Indiv::pushObjective(bool max, std::vector<double> fxa) {
 	isMax = max;
 }
 
-int Indiv::getRestriction(std::string keyword) {
+template <typename Real>
+int Indiv<Real>::getRestriction(std::string keyword) {
 	if (keyword=="eql") {
 		return 0;
 	} else if (keyword=="les") {
@@ -103,17 +111,20 @@ int Indiv::getRestriction(std::string keyword) {
 	return -1;
 }
 
-void Indiv::pushRestriction(std::vector<double> Aline, double bvalue, int rest) {
+template <typename Real>
+void Indiv<Real>::pushRestriction(std::vector<double> Aline, double bvalue, int rest) {
 	A.push_back(Aline);
 	b.push_back(bvalue);
 	rests.push_back(rest);
 }
 
-bool Indiv::isMaxP() {
+template <typename Real>
+bool Indiv<Real>::isMaxP() {
 	return isMax;
 }
 
-void Indiv::printProblem() {
+template <typename Real>
+void Indiv<Real>::printProblem() {
 	std::cout<<(isMax ? "Maximize " : "Minimize ");
 	if (trueObj[0]<0) {
 		std::cout<<"-";
@@ -160,7 +171,8 @@ void Indiv::printProblem() {
 	}
 }
 
-std::ostream& operator<<(std::ostream &output, const Indiv &I) {
+template <typename IndivTemp>
+std::ostream& operator<<(std::ostream &output, const Indiv<IndivTemp> &I) {
 	for (int i=0; i<I.ind.size(); ++i) {
 		output<<"x"<<i+1<<"="<<I.ind[i]<<" ";
 	}
@@ -168,9 +180,20 @@ std::ostream& operator<<(std::ostream &output, const Indiv &I) {
 	return output;
 }
 
-std::vector<double> Indiv::fx(0);
-std::vector<double> Indiv::trueObj(0);
-std::vector< std::vector<double> > Indiv::A(0);
-std::vector<double> Indiv::b(0);
-std::vector<int> Indiv::rests(0);
-bool Indiv::isMax = true;
+template <typename Real>
+std::vector<double> Indiv<Real>::fx(0);
+
+template <typename Real>
+std::vector<double> Indiv<Real>::trueObj(0);
+
+template <typename Real>
+std::vector< std::vector<double> > Indiv<Real>::A(0);
+
+template <typename Real>
+std::vector<double> Indiv<Real>::b(0);
+
+template <typename Real>
+std::vector<int> Indiv<Real>::rests(0);
+
+template <typename Real>
+bool Indiv<Real>::isMax = true;
