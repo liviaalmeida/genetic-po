@@ -1,11 +1,15 @@
-# Genetic Algorithm to solve simple Linear Programming Problems
+# Genetic Algorithm to solve simple Linear Programming Problem
 
-Issues / to do:
+How to use:
 
-- All variables are bound to the same limits
+Parameters through command line
 
-- Throw exceptions (ex: problem is not set, size of problem vectors do not match, etc)
+First argument are the parameters of Linear Programming Problem
+- Vars = number of variables of the problem
+- Objective = "max" or "min" and coefficients
+- Rest = to identify any restriction. Instead of symbols to less than, equal, etc, use: eql (equal to), les (less than), leq (less than or equal to), gre (greater than), geq (greater than or equal to), dif (different of)
 
-- Dual?
+Second argument is the configuration of the Genetic Algorith
+- Only parameter to be implemented is diversity
 
-- ~~It only solves maximization problems with restrictions of type "less than"~~
+Run using: ./solver (arg1) (arg2)
