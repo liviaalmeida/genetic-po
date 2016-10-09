@@ -42,4 +42,7 @@ private:
 	static bool isMax;
 };
 
+#define INDIV_FUNCS
+#include "indiv.cpp"
+
 #endif

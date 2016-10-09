@@ -1,4 +1,7 @@
+#ifndef INDIV_FUNCS
 #include "indiv.hpp"
+
+#else
 
 template <typename Real>
 Indiv<Real>::Indiv() {
@@ -197,3 +200,5 @@ std::vector<int> Indiv<Real>::rests(0);
 
 template <typename Real>
 bool Indiv<Real>::isMax = true;
+
+#endif
