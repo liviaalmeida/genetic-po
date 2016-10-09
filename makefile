@@ -21,4 +21,4 @@ solver.o: solver.cpp
 	$(CXX) -c solver.cpp -std=c++11
 
 clean:
-	rm -rf *o"
+	rm -rf *o
