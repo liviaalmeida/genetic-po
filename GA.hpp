@@ -20,16 +20,17 @@ public:
 	double crossP, mutP, restWeight;
 };
 
+template <typename Real>
 class GA {
 public:
 	GA(char const *params, char const *ini);
 	~GA();
 
-	Indiv run();
+	Indiv<Real> run();
 
 
 private:
-	std::vector<Indiv> population;
+	std::vector< Indiv<Real> > population;
 	std::vector<double> fitness;
 	int vars;
 
@@ -39,11 +40,14 @@ private:
 	void initialPopulation();
 
 	int tournament();
-	std::pair<Indiv,Indiv> crossover();
-	void mutation(Indiv &parent);
+	std::pair< Indiv<Real> , Indiv<Real> > crossover();
+	void mutation(Indiv<Real> &parent);
 	void evolve(int bestfit);
 	int printStats();
 
 };
+
+#define GA_FUNCS
+#include "GA.cpp"
 
 #endif
